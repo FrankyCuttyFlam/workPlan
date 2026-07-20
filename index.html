@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Office Days">
+<meta name="theme-color" content="#1E3A5F">
+<title>Office Days</title>
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' shape-rendering='crispEdges'%3E%3Crect x='6' y='2' width='4' height='1' fill='%23703F17'/%3E%3Crect x='5' y='3' width='1' height='1' fill='%23703F17'/%3E%3Crect x='10' y='3' width='1' height='1' fill='%23703F17'/%3E%3Crect x='2' y='4' width='12' height='2' fill='%238B5A2B'/%3E%3Crect x='2' y='6' width='12' height='7' fill='%23A0682F'/%3E%3Crect x='2' y='4' width='1' height='9' fill='%23703F17'/%3E%3Crect x='13' y='4' width='1' height='9' fill='%23703F17'/%3E%3Crect x='2' y='12' width='12' height='1' fill='%23703F17'/%3E%3Crect x='7' y='7' width='2' height='2' fill='%23FFD23F'/%3E%3Crect x='7' y='9' width='2' height='1' fill='%23D9A520'/%3E%3C/svg%3E">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --navy:#1E3A5F;
+  --blue-bg:#E6F1FB;--blue-t:#0C447C;--blue-b:#185FA5;
+  --green-bg:#EAF3DE;--green-t:#27500A;--green-b:#3B6D11;
+  --amber-bg:#FAEEDA;--amber-t:#633806;--amber-b:#BA7517;
+  --bg:#F5F5F3;--surface:#FFFFFF;--border:#E5E5E2;
+  --text:#1A1A1A;--text2:#6B6B68;--text3:#A8A8A5;
+  --radius:14px;--radius-sm:10px;--radius-pill:99px;
+}
+@media(prefers-color-scheme:dark){
+  :root{
+    --bg:#111110;--surface:#1C1C1A;--border:#2E2E2C;
+    --text:#F0EFE8;--text2:#9C9A92;--text3:#5A5A56;
+    --blue-bg:#042C53;--blue-t:#B5D4F4;
+    --green-bg:#173404;--green-t:#C0DD97;
+    --amber-bg:#412402;--amber-t:#FAC775;
+  }
+}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;overflow:hidden}
+.app{display:flex;flex-direction:column;height:100%;max-width:430px;margin:0 auto}
+.header{background:var(--navy);color:#fff;padding-top:max(env(safe-area-inset-top),48px);padding-left:20px;padding-right:20px;flex-shrink:0}
+.header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.app-name{font-size:17px;font-weight:600;letter-spacing:-.2px}
+.sched-badge{font-size:11px;background:rgba(255,255,255,.15);padding:3px 10px;border-radius:var(--radius-pill);color:rgba(255,255,255,.85)}
+.hero{padding-bottom:14px;display:flex;align-items:center;gap:14px}
+.hero-icon{font-size:40px;line-height:1}
+.hero-count{font-size:26px;font-weight:700;letter-spacing:-.5px;line-height:1.15}
+.hero-sub{font-size:13px;color:rgba(255,255,255,.65);margin-top:3px}
+.week-strip{display:flex;gap:5px;padding-bottom:16px}
+.wday{flex:1;text-align:center;padding:7px 0 8px;border-radius:var(--radius-sm);background:rgba(255,255,255,.08)}
+.wday.office{background:rgba(255,255,255,.22)}
+.wday.today-w{outline:1.5px solid rgba(255,255,255,.85)}
+.wday-lbl{font-size:10px;font-weight:600;color:rgba(255,255,255,.6);letter-spacing:.05em}
+.wday.office .wday-lbl{color:#fff}
+.wday-icn{font-size:11px;line-height:1;margin-top:3px;height:12px}
+.scroll{flex:1;overflow-y:auto;padding:16px;padding-bottom:max(env(safe-area-inset-bottom),16px);-webkit-overflow-scrolling:touch}
+.attend-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:14px;display:flex;align-items:center;gap:12px}
+.attend-info{flex:1}
+.attend-title{font-size:14px;font-weight:600;margin-bottom:2px}
+.attend-sub{font-size:12px;color:var(--text2)}
+.attend-btn{background:var(--blue-b);color:#fff;border:none;font-size:13px;font-weight:600;padding:10px 16px;border-radius:var(--radius-pill);cursor:pointer;transition:transform .1s}
+.attend-btn:active{transform:scale(.95)}
+.attend-btn.done{background:var(--green-b)}
+.tally-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:14px}
+.tally-row{display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:6px}
+.tally-row b{color:var(--text)}
+.tally-track{height:4px;background:var(--border);border-radius:2px;overflow:hidden}
+.tally-fill{height:100%;background:var(--green-b);border-radius:2px;transition:width .35s}
+.section-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:8px;margin-top:4px;padding-left:2px;display:flex;align-items:center;gap:8px}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border)}
+.cal-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:14px}
+.cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.cal-month{font-size:14px;font-weight:600}
+.cal-nav{display:flex;gap:6px}
+.cal-btn{background:var(--bg);border:1px solid var(--border);width:28px;height:28px;border-radius:8px;cursor:pointer;color:var(--text2);font-size:14px;display:flex;align-items:center;justify-content:center}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.cal-dow{font-size:9px;font-weight:600;text-transform:uppercase;text-align:center;color:var(--text3);padding:3px 0}
+.cal-cell{aspect-ratio:1;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:12px;color:var(--text2);position:relative}
+.cal-cell.office-c{background:var(--blue-bg);color:var(--blue-t);font-weight:600}
+.cal-cell.today-c{outline:1.5px solid var(--blue-b)}
+.cal-cell.attended-c::after{content:'';position:absolute;bottom:4px;width:4px;height:4px;border-radius:50%;background:var(--green-b)}
+.cal-cell{cursor:pointer}
+.cal-cell.holiday-c{background:var(--amber-bg);color:var(--amber-t);font-weight:600;font-size:14px}
+.upcoming{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:4px 14px}
+.up-row{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--border)}
+.up-row:last-child{border-bottom:none}
+.up-date{font-size:12px;font-weight:600;min-width:80px}
+.up-rel{font-size:12px;color:var(--text2);flex:1}
+.up-tag{font-size:10px;font-weight:600;padding:2px 8px;border-radius:var(--radius-pill)}
+.t-reg{background:var(--blue-bg);color:var(--blue-t)}
+.t-fri{background:var(--amber-bg);color:var(--amber-t)}
+.footer-note{text-align:center;font-size:11px;color:var(--text3);padding:14px 20px 6px;line-height:1.5}
+.tab-bar{display:flex;background:var(--surface);border-top:1px solid var(--border);padding-bottom:env(safe-area-inset-bottom,0);flex-shrink:0}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;padding:10px 0 8px;cursor:pointer;color:var(--text3);font-size:10px;gap:3px;transition:color .15s}
+.tab.active{color:var(--navy)}
+@media(prefers-color-scheme:dark){.tab.active{color:#85B7EB}}
+.tab-icon{font-size:21px;line-height:1}
+.hol-year{font-size:13px;font-weight:700;margin:14px 2px 8px;color:var(--text)}
+.hol-year:first-child{margin-top:0}
+.hol-row{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:8px}
+.hol-row.past{opacity:.45}
+.hol-date{font-size:12px;font-weight:600;min-width:86px}
+.hol-name{font-size:13px;flex:1;min-width:0}
+.hol-tag{font-size:10px;font-weight:600;padding:2px 8px;border-radius:var(--radius-pill);white-space:nowrap}
+.h-file{background:var(--blue-bg);color:var(--blue-t)}
+.h-adhoc{background:var(--amber-bg);color:var(--amber-t)}
+.hol-remove{background:none;border:none;color:var(--text3);font-size:15px;cursor:pointer;padding:4px}
+.hol-empty{text-align:center;padding:40px 30px;color:var(--text3);font-size:13px;line-height:1.6}
+.toast{position:fixed;bottom:calc(env(safe-area-inset-bottom) + 24px);left:50%;transform:translateX(-50%) translateY(80px);background:var(--navy);color:#fff;font-size:13px;font-weight:500;padding:10px 20px;border-radius:var(--radius-pill);opacity:0;transition:all .3s cubic-bezier(.4,0,.2,1);pointer-events:none;white-space:nowrap;z-index:99}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="header-top">
+      <div class="app-name">💼 Office Days</div>
+      <div class="sched-badge">Tue · Thu · 1st/3rd/5th Fri</div>
+    </div>
+    <div class="hero">
+      <div class="hero-icon" id="hero-icon"></div>
+      <div>
+        <div class="hero-count" id="hero-count"></div>
+        <div class="hero-sub" id="hero-sub"></div>
+      </div>
+    </div>
+    <div class="week-strip" id="week-strip"></div>
+  </div>
+  <div class="scroll" id="content"></div>
+  <div class="tab-bar">
+    <div class="tab active" id="tab-sched" onclick="switchView('sched')">
+      <div class="tab-icon">🏢</div>
+      <div>Schedule</div>
+    </div>
+    <div class="tab" id="tab-hols" onclick="switchView('hols')">
+      <div class="tab-icon">🎉</div>
+      <div>Holidays</div>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const DOWS_S=["S","M","T","W","T","F","S"];
+const DOWS_FULL=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+const MONTHS=["January","February","March","April","May","June","July","August","September","October","November","December"];
+const MONTHS_S=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+function todayDate(){const d=new Date();d.setHours(0,0,0,0);return d}
+function dk(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,'0')+"-"+String(d.getDate()).padStart(2,'0')}
+function fridayOrdinal(d){return Math.ceil(d.getDate()/7)}
+function ordinalWord(n){return ["","1st","2nd","3rd","4th","5th"][n]}
+
+function isOfficeDay(d){
+  if(isHoliday(d)) return false;
+  const w=d.getDay();
+  if(w===2||w===4) return true;                       // Tue, Thu
+  if(w===5) return [1,3,5].includes(fridayOrdinal(d)); // 1st/3rd/5th Fri
+  return false;
+}
+function dayLabel(d){
+  const w=d.getDay();
+  if(w===2) return {tag:"Tuesday",cls:"t-reg"};
+  if(w===4) return {tag:"Thursday",cls:"t-reg"};
+  if(w===5) return {tag:ordinalWord(fridayOrdinal(d))+" Friday",cls:"t-fri"};
+  return null;
+}
+function nextOfficeDay(from){
+  const d=new Date(from);
+  do{d.setDate(d.getDate()+1)}while(!isOfficeDay(d));
+  return d;
+}
+
+function load(){try{return JSON.parse(localStorage.getItem('officedays_v1')||'{}')}catch(e){return{}}}
+function save(s){try{localStorage.setItem('officedays_v1',JSON.stringify(s))}catch(e){}}
+let attended=load();
+
+function loadHol(){try{return JSON.parse(localStorage.getItem('officedays_hol')||'{}')}catch(e){return{}}}
+function saveHol(h){try{localStorage.setItem('officedays_hol',JSON.stringify(h))}catch(e){}}
+let holidays=loadHol();
+let fileHolidays={};  // dk -> label, loaded from holidays.txt in the repo
+function parseHolidaysFile(txt){
+  const map={};
+  txt.split(/\r?\n/).forEach(line=>{
+    const s=line.trim();
+    if(!s||s.startsWith('#'))return;
+    const m=s.match(/^(\d{4})-(\d{2})-(\d{2})\s*(.*)$/);
+    if(!m)return;
+    const key=m[1]+"-"+m[2]+"-"+m[3];
+    map[key]=m[4].trim()||"Holiday";
+  });
+  return map;
+}
+function loadFileHolidays(){
+  fetch('holidays.txt',{cache:'no-store'})
+    .then(r=>r.ok?r.text():'')
+    .then(txt=>{if(txt){fileHolidays=parseHolidaysFile(txt);render();}})
+    .catch(()=>{});
+}
+function isHoliday(d){const k=dk(d);return !!holidays[k]||!!fileHolidays[k]}
+function holidayName(d){const k=dk(d);return fileHolidays[k]||"Holiday"}
+function toggleHoliday(dayKey){
+  if(fileHolidays[dayKey]){
+    showToast("📄 Set in holidays.txt — edit that file to change");
+    return;
+  }
+  holidays[dayKey]=!holidays[dayKey];
+  if(!holidays[dayKey]) delete holidays[dayKey];
+  saveHol(holidays);
+  showToast(holidays[dayKey]?"🎉 Marked as holiday":"Holiday removed");
+  render();
+}
+
+function toggleAttend(dayKey){
+  attended[dayKey]=!attended[dayKey];
+  save(attended);
+  if(attended[dayKey]) showToast("💼 Attendance logged!");
+  render();
+}
+
+let toastTimer;
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),2200);
+}
+
+let activeView='sched';
+function switchView(v){
+  activeView=v;
+  document.getElementById('tab-sched').classList.toggle('active',v==='sched');
+  document.getElementById('tab-hols').classList.toggle('active',v==='hols');
+  render();
+}
+
+function renderHolidays(c){
+  const t=todayDate();
+  // merge: [{key,date,name,src}]
+  const items=[];
+  Object.keys(fileHolidays).forEach(k=>items.push({key:k,name:fileHolidays[k],src:'file'}));
+  Object.keys(holidays).forEach(k=>{if(!fileHolidays[k])items.push({key:k,name:'Day off',src:'adhoc'})});
+  items.forEach(it=>{
+    const[y,m,d]=it.key.split('-').map(Number);
+    it.date=new Date(y,m-1,d);
+  });
+  items.sort((a,b)=>a.date-b.date);
+
+  if(!items.length){
+    c.innerHTML='<div class="hol-empty">No holidays recorded yet.<br>Company holidays come from <b>holidays.txt</b> in the repo.<br>Tap days in the month calendar for ad-hoc days off.</div>';
+    return;
+  }
+
+  let curYear=null;
+  items.forEach(it=>{
+    const y=it.date.getFullYear();
+    if(y!==curYear){
+      curYear=y;
+      const yh=document.createElement('div');
+      yh.className='hol-year';
+      yh.textContent=y;
+      c.appendChild(yh);
+    }
+    const past=it.date<t;
+    const row=document.createElement('div');
+    row.className='hol-row'+(past?' past':'');
+    row.innerHTML=`
+      <div class="hol-date">${DOWS_FULL[it.date.getDay()].slice(0,3)} ${MONTHS_S[it.date.getMonth()]} ${it.date.getDate()}</div>
+      <div class="hol-name">${it.name}</div>
+      <div class="hol-tag ${it.src==='file'?'h-file':'h-adhoc'}">${it.src==='file'?'📄 company':'🎉 ad-hoc'}</div>
+      ${it.src==='adhoc'?`<button class="hol-remove" onclick="toggleHoliday('${it.key}')" aria-label="Remove">✕</button>`:''}`;
+    c.appendChild(row);
+  });
+
+  const note=document.createElement('div');
+  note.className='footer-note';
+  note.textContent='📄 company holidays are managed in holidays.txt in the repo. 🎉 ad-hoc days were tapped in the month calendar and can be removed here.';
+  c.appendChild(note);
+}
+
+let calYear,calMonth;
+(function(){const t=todayDate();calYear=t.getFullYear();calMonth=t.getMonth()})();
+
+function moveCal(delta){
+  calMonth+=delta;
+  if(calMonth<0){calMonth=11;calYear--}
+  if(calMonth>11){calMonth=0;calYear++}
+  render();
+}
+
+function officeDaysInMonth(yr,mo){
+  const dim=new Date(yr,mo+1,0).getDate();
+  const list=[];
+  for(let d=1;d<=dim;d++){
+    const date=new Date(yr,mo,d);
+    if(isOfficeDay(date)) list.push(date);
+  }
+  return list;
+}
+
+function renderWeekStrip(){
+  const t=todayDate();
+  const strip=document.getElementById('week-strip');
+  strip.innerHTML='';
+  const sunday=new Date(t);
+  sunday.setDate(t.getDate()-t.getDay());
+  for(let i=0;i<7;i++){
+    const d=new Date(sunday);
+    d.setDate(sunday.getDate()+i);
+    const isO=isOfficeDay(d);
+    const isT=d.getTime()===t.getTime();
+    const el=document.createElement('div');
+    el.className='wday'+(isO?' office':'')+(isT?' today-w':'');
+    el.innerHTML=`<div class="wday-lbl">${DOWS_S[i]}</div><div class="wday-icn">${isO?'🏢':''}</div>`;
+    strip.appendChild(el);
+  }
+}
+
+function fmtShort(d){return DOWS_FULL[d.getDay()].slice(0,3)+" "+MONTHS_S[d.getMonth()]+" "+d.getDate()}
+function relDays(d){
+  const t=todayDate();
+  const diff=Math.round((d-t)/86400000);
+  if(diff===0)return"today";
+  if(diff===1)return"tomorrow";
+  return"in "+diff+" days";
+}
+
+function render(){
+  renderWeekStrip();
+  const t=todayDate();
+  const dayKey=dk(t);
+  const office=isOfficeDay(t);
+  const c=document.getElementById('content');
+  const hi=document.getElementById('hero-icon'),hc=document.getElementById('hero-count'),hs=document.getElementById('hero-sub');
+  c.innerHTML='';
+
+  if(activeView==='hols'){
+    if(isHoliday(t)){hi.textContent="🎉";hc.textContent=holidayName(t);hs.textContent="Recorded holidays";}
+    else{hi.textContent="🗓";hc.textContent="Holidays";hs.textContent="Everything on the books";}
+    renderHolidays(c);
+    return;
+  }
+
+  if(isHoliday(t)){
+    hi.textContent="🎉";
+    hc.textContent=holidayName(t);
+    const next=nextOfficeDay(t);
+    hs.textContent="Enjoy the day off — next office day: "+DOWS_FULL[next.getDay()]+", "+MONTHS_S[next.getMonth()]+" "+next.getDate();
+  } else if(office){
+    const lbl=dayLabel(t);
+    hi.textContent="🏢";
+    hc.textContent="Work from Work";
+    hs.textContent=lbl.tag+" — pack the laptop";
+  } else {
+    const next=nextOfficeDay(t);
+    hi.textContent="🏠";
+    hc.textContent="Work from Home";
+    hs.textContent="Next office day: "+DOWS_FULL[next.getDay()]+", "+MONTHS_S[next.getMonth()]+" "+next.getDate();
+  }
+
+  if(office){
+    const isAtt=!!attended[dayKey];
+    const ac=document.createElement('div');
+    ac.className='attend-card';
+    ac.innerHTML=`
+      <div class="attend-info">
+        <div class="attend-title">${isAtt?'Attendance logged ✓':'Made it in?'}</div>
+        <div class="attend-sub">${isAtt?'Tap to undo':'Tap to log today\u2019s office visit'}</div>
+      </div>
+      <button class="attend-btn${isAtt?' done':''}" onclick="toggleAttend('${dayKey}')">${isAtt?'✓ Done':'💼 I\u2019m in'}</button>`;
+    c.appendChild(ac);
+  }
+
+  // Monthly tally (current real month)
+  const nowYr=t.getFullYear(),nowMo=t.getMonth();
+  const monthDays=officeDaysInMonth(nowYr,nowMo);
+  const past=monthDays.filter(d=>d<=t);
+  const attCount=past.filter(d=>attended[dk(d)]).length;
+  const tc=document.createElement('div');
+  tc.className='tally-card';
+  tc.innerHTML=`
+    <div class="tally-row"><span>${MONTHS[nowMo]} attendance</span><span><b>${attCount}</b> of ${past.length} so far · ${monthDays.length} total this month</span></div>
+    <div class="tally-track"><div class="tally-fill" style="width:${past.length?attCount/past.length*100:0}%"></div></div>`;
+  c.appendChild(tc);
+
+  // Month calendar
+  const lbl1=document.createElement('div');
+  lbl1.className='section-label';
+  lbl1.textContent='Month view';
+  c.appendChild(lbl1);
+  const cal=document.createElement('div');
+  cal.className='cal-card';
+  let grid=`<div class="cal-head">
+    <div class="cal-month">${MONTHS[calMonth]} ${calYear}</div>
+    <div class="cal-nav">
+      <button class="cal-btn" onclick="moveCal(-1)">&#8249;</button>
+      <button class="cal-btn" onclick="moveCal(1)">&#8250;</button>
+    </div></div><div class="cal-grid">`;
+  DOWS_S.forEach(d=>grid+=`<div class="cal-dow">${d}</div>`);
+  const first=new Date(calYear,calMonth,1).getDay();
+  const dim=new Date(calYear,calMonth+1,0).getDate();
+  for(let i=0;i<first;i++)grid+=`<div class="cal-cell"></div>`;
+  for(let d=1;d<=dim;d++){
+    const date=new Date(calYear,calMonth,d);
+    const isH=isHoliday(date);
+    const isO=isOfficeDay(date);
+    const isT=date.getTime()===t.getTime();
+    const isA=isO&&attended[dk(date)];
+    grid+=`<div class="cal-cell${isO?' office-c':''}${isH?' holiday-c':''}${isT?' today-c':''}${isA?' attended-c':''}" onclick="toggleHoliday('${dk(date)}')">${isH?'🎉':d}</div>`;
+  }
+  grid+='</div>';
+  cal.innerHTML=grid;
+  c.appendChild(cal);
+
+  // Upcoming
+  const lbl2=document.createElement('div');
+  lbl2.className='section-label';
+  lbl2.textContent='Upcoming office days';
+  c.appendChild(lbl2);
+  const box=document.createElement('div');
+  box.className='upcoming';
+  let d=new Date(t);
+  if(!office) d.setDate(d.getDate()-1);
+  let shown=0;
+  let cursor=office?t:d;
+  if(office){
+    const lb=dayLabel(t);
+    const row=document.createElement('div');
+    row.className='up-row';
+    row.innerHTML=`<div class="up-date">${fmtShort(t)}</div><div class="up-rel">today</div><div class="up-tag ${lb.cls}">${lb.tag}</div>`;
+    box.appendChild(row);
+    shown++;
+  }
+  let cur=new Date(t);
+  while(shown<5){
+    cur=nextOfficeDay(cur);
+    const lb=dayLabel(cur);
+    const row=document.createElement('div');
+    row.className='up-row';
+    row.innerHTML=`<div class="up-date">${fmtShort(cur)}</div><div class="up-rel">${relDays(cur)}</div><div class="up-tag ${lb.cls}">${lb.tag}</div>`;
+    box.appendChild(row);
+    shown++;
+  }
+  c.appendChild(box);
+
+  const note=document.createElement('div');
+  note.className='footer-note';
+  note.textContent='Office days: every Tuesday & Thursday, plus the 1st, 3rd, and 5th Friday of each month. Company holidays come from holidays.txt in the repo; tap any day in the month view for ad-hoc days off 🎉.';
+  c.appendChild(note);
+}
+
+if('serviceWorker' in navigator){
+  const sw=`self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request))))`;
+  const blob=new Blob([sw],{type:'application/javascript'});
+  navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(()=>{});
+}
+
+render();
+loadFileHolidays();
+</script>
+</body>
+</html>
